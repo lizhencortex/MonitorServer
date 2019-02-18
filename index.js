@@ -9,14 +9,9 @@ const app = new Koa()
 const Routers = new Router()
 const redis = new Redis({ port: 6379, host: '127.0.0.1', db: 2 })
 
-const staticPath = './static'
 const CortexNodeList = 'CortexNodeList'
 
-app.use(static(__dirname + staticPath))
-
-Routers.get('/nodelist', async ctx => {
-    ctx.body = 'home'
-}).get('/nodelist/show', async ctx => {
+Routers.get('/api/show', async ctx => {
     let nodes = await redis.get(CortexNodeList)
     nodes = nodes ? JSON.parse(nodes) : []
     for (let i = 0; i < nodes.length; ++i) {
@@ -24,7 +19,7 @@ Routers.get('/nodelist', async ctx => {
         nodes[i] = JSON.parse(t)
     }
     ctx.body = nodes
-}).post('/nodelist/send', async ctx => {
+}).post('/api/send', async ctx => {
     const ip = ctx.request.headers['x-forwarded-for'] || ctx.request.connection.remoteAddress
     const gpuinfo = ctx.request.body.gpu
     const mac = ctx.request.body.mac
@@ -46,7 +41,7 @@ Routers.get('/nodelist', async ctx => {
     if (blockNumber == 0) {
         let olddata_raw = await redis.get(mac)
         let olddata = JSON.parse(olddata_raw)
-        if (olddata.blockNumber != 0) {
+        if (olddata && olddata.blockNumber != 0) {
             blockNumber = olddata.blockNumber
         }
     }
