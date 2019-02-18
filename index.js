@@ -14,9 +14,9 @@ const CortexNodeList = 'CortexNodeList'
 
 app.use(static(__dirname + staticPath))
 
-Routers.get('/api', async ctx => {
+Routers.get('/nodelist', async ctx => {
     ctx.body = 'home'
-}).get('/api/show', async ctx => {
+}).get('/nodelist/show', async ctx => {
     let nodes = await redis.get(CortexNodeList)
     nodes = nodes ? JSON.parse(nodes) : []
     for (let i = 0; i < nodes.length; ++i) {
@@ -24,7 +24,7 @@ Routers.get('/api', async ctx => {
         nodes[i] = JSON.parse(t)
     }
     ctx.body = nodes
-}).post('/api/send', async ctx => {
+}).post('/nodelist/send', async ctx => {
     const ip = ctx.request.headers['x-forwarded-for'] || ctx.request.connection.remoteAddress
     const gpuinfo = ctx.request.body.gpu
     const mac = ctx.request.body.mac
@@ -65,5 +65,5 @@ app.use(async ctx => {
     console.log(ctx.url, ctx.method)
 })
 
-app.listen(5421)
+app.listen(8899)
 
